@@ -13,6 +13,14 @@ static int cmp_char(const void *a, const void *b)
 	return *a_ - *b_;
 }
 
+static void *xmalloc(size_t s)
+{
+	void *p = malloc(s);
+	if (!p)
+		exit(-1);
+	return p;
+}
+
 void tpf_init(struct tpf_context *context)
 {
 	static struct tpf_context prototype;
@@ -27,14 +35,12 @@ void tpf_register(struct tpf_context *context, char letter, const char *flags, t
 	if (context->fmts[(unsigned char)letter])
 		return;
 
-	fmt = malloc(sizeof *fmt);
-	if (!fmt)
-		exit(-1);
+	fmt = xmalloc(sizeof *fmt);
 	fmt->spec = letter;
 	fmt->callback = conv;
 
 	len = strlen(flags);
-	fmt->flags = malloc(len + 1);
+	fmt->flags = xmalloc(len + 1);
 	fmt->flags[len] = '\0';
 	memcpy(fmt->flags, flags, len);
 	qsort(fmt->flags, len, 1, cmp_char);
@@ -82,7 +88,7 @@ static const char *readflags(struct tpf_state *state, const char *p)
 		if (isalnum(*q) && *q != '0' || *q == '.' || *q == '%' || *q == '*')
 			break;
 
-	state->flags = malloc(q - p + 1);
+	state->flags = xmalloc(q - p + 1);
 	state->flags[q - p] = '\0';
 	if (q != p)
 		memcpy(state->flags, p, q - p);
