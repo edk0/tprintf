@@ -231,6 +231,24 @@ static int conv_n(struct tpf_state *state, va_list *ap)
 	return 0;
 }
 
+static int conv_o(struct tpf_state *state, va_list *ap)
+{
+	uintmax_t v;
+	if (read_unsigned(state, ap, &v) != 0)
+		return -1;
+
+	if (strchr(state->flags, '#')) {
+		int sd = v ? digits_unsigned(v, 8) : 0;
+		if (!state->prec_set || sd > state->prec) {
+			state->prec_set = 1;
+			state->prec = sd + 1;
+		}
+	}
+
+	convert_unsigned(state, v, 8, "01234567", "");
+	return 0;
+}
+
 static int conv_p(struct tpf_state *state, va_list *ap)
 {
 	void *p = va_arg(*ap, void *);
@@ -305,6 +323,7 @@ void tprintf__init(void)
 	tpf_register(tprintf__context, 'd', " +-0",  conv_i);
 	tpf_register(tprintf__context, 'i', " +-0",  conv_i);
 	tpf_register(tprintf__context, 'n', "",      conv_n);
+	tpf_register(tprintf__context, 'o', " +-0#", conv_o);
 	tpf_register(tprintf__context, 'p', " +-",   conv_p);
 	tpf_register(tprintf__context, 's', " +-",   conv_s);
 	tpf_register(tprintf__context, 'u', " +-0",  conv_u);
