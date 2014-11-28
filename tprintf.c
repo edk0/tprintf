@@ -7,7 +7,8 @@
 
 #include "tprintf.h"
 
-static int cmp_char(const void *a, const void *b) {
+static int cmp_char(const void *a, const void *b)
+{
 	const char *a_ = a, *b_ = b;
 	return *a_ - *b_;
 }
@@ -34,8 +35,8 @@ void tpf_register(struct tpf_context *context, char letter, const char *flags, t
 
 	len = strlen(flags);
 	fmt->flags = malloc(len + 1);
-	memcpy(fmt->flags, flags, len);
 	fmt->flags[len] = '\0';
+	memcpy(fmt->flags, flags, len);
 	qsort(fmt->flags, len, 1, cmp_char);
 
 	context->fmts[(unsigned char)letter] = fmt;
@@ -76,14 +77,17 @@ void tpf_write(struct tpf_state *state, size_t len, const char *data)
 static const char *readflags(struct tpf_state *state, const char *p)
 {
 	const char *q;
+
 	for (q = p; *q; q++)
 		if (isalnum(*q) && *q != '0' || *q == '.' || *q == '%' || *q == '*')
 			break;
+
 	state->flags = malloc(q - p + 1);
+	state->flags[q - p] = '\0';
 	if (q != p)
 		memcpy(state->flags, p, q - p);
-	state->flags[q - p] = '\0';
 	qsort(state->flags, q - p, 1, cmp_char);
+
 	return q;
 }
 
@@ -166,7 +170,7 @@ static const char *readlen(struct tpf_state *state, const char *p)
 
 static char checkflags(const char *allow, const char *cmp)
 {
-	/* Flags are kept in sorted order for easy testing. */
+	/* Flags are kept sorted for easy testing. */
 	for (; *cmp; cmp++) {
 		while (*allow && *allow != *cmp)
 			allow++;
