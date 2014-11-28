@@ -286,12 +286,12 @@ void tprintf__init(void)
 	tpf_init(tprintf__context);
 
 	tpf_register(tprintf__context, '%', "",      conv_pct);
-	tpf_register(tprintf__context, 'c', "-",     conv_c);
-	tpf_register(tprintf__context, 'd', " 0+-",  conv_i);
-	tpf_register(tprintf__context, 'i', " 0+-",  conv_i);
+	tpf_register(tprintf__context, 'c', " +-",   conv_c);
+	tpf_register(tprintf__context, 'd', " +-0",  conv_i);
+	tpf_register(tprintf__context, 'i', " +-0",  conv_i);
 	tpf_register(tprintf__context, 'n', "",      conv_n);
-	tpf_register(tprintf__context, 's', "-",     conv_s);
-	tpf_register(tprintf__context, 'u', " 0+-",  conv_u);
-	tpf_register(tprintf__context, 'x', " 0+-#", conv_x);
-	tpf_register(tprintf__context, 'X', " 0+-#", conv_X);
+	tpf_register(tprintf__context, 's', " +-",   conv_s);
+	tpf_register(tprintf__context, 'u', " +-0",  conv_u);
+	tpf_register(tprintf__context, 'x', " +-0#", conv_x);
+	tpf_register(tprintf__context, 'X', " +-0#", conv_X);
 }
