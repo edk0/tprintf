@@ -232,7 +232,6 @@ static int conv_n(struct tpf_state *state, va_list *ap)
 static int conv_p(struct tpf_state *state, va_list *ap)
 {
 	void *p = va_arg(*ap, void *);
-	size_t n = 0;
 
 	if (p == NULL) {
 		tpf_write(state, 4, "NULL");

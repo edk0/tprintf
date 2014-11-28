@@ -124,8 +124,6 @@ static const char *readprec(struct tpf_state *state, const char *p, va_list *ap)
 		return p + 1;
 	}
 
-	int printf(const char *, ...);
-
 	l = strtol(p, &end, 10);
 
 	if (end > p)
