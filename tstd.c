@@ -129,10 +129,10 @@ static void convert_int(struct tpf_state *state, uintmax_t i, int sign, int base
 	digits = digits_unsigned(i, base);
 	width = digits + strlen(prefix);
 
-	if (        strchr(state->flags, '0')) pad = '0';
-	if (        strchr(state->flags, '-')) pad = ' ', just = LEFT;
-	if (sign && strchr(state->flags, ' ')) pre = ' ';
-	if (sign && strchr(state->flags, '+')) pre = '+';
+	if (!state->prec_set && strchr(state->flags, '0')) pad = '0';
+	if (                    strchr(state->flags, '-')) pad = ' ', just = LEFT;
+	if (sign &&             strchr(state->flags, ' ')) pre = ' ';
+	if (sign &&             strchr(state->flags, '+')) pre = '+';
 
 	if (state->prec_set && digits < state->prec) {
 		width += state->prec - digits;
