@@ -117,8 +117,8 @@ static void convert_int(struct tpf_state *state, uintmax_t i, int sign, int base
 {
 	int n, digits;
 	int width;
+	int zero;
 	int padding = 0;
-	int zero = 0;
 
 	uintmax_t div;
 
@@ -139,6 +139,8 @@ static void convert_int(struct tpf_state *state, uintmax_t i, int sign, int base
 	if (state->prec_set && state->prec == 0 && i == 0)
 		width = digits = 0;
 
+	zero = width - digits;
+
 	if (sign < 0 || pre != '\0')
 		width++;
 
@@ -146,7 +148,7 @@ static void convert_int(struct tpf_state *state, uintmax_t i, int sign, int base
 		padding = state->fw - width;
 
 	if (pad == '0') {
-		zero = padding;
+		zero += padding;
 		padding = 0;
 	}
 
