@@ -41,6 +41,8 @@ struct tpf_state {
 	} length;
 	int fw,   fw_set;
 	int prec, prec_set;
+
+	size_t padding;
 };
 
 struct tpf_output {
@@ -57,5 +59,6 @@ void tpf_unregister(struct tpf_context *, char);
 void tpf_fini      (struct tpf_context *);
 
 void tpf_write(struct tpf_state *state, size_t, const char *);
+void tpf_pad  (struct tpf_state *state, size_t);
 
 #endif

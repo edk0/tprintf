@@ -80,6 +80,28 @@ void tpf_write(struct tpf_state *state, size_t len, const char *data)
 	state->pos += r;
 }
 
+static void repeat(struct tpf_state *state, char c, size_t n)
+{
+	for ( ; n; n--)
+		tpf_write(state, 1, &c);
+}
+
+void tpf_pad(struct tpf_state *state, size_t ow)
+{
+	size_t pad;
+	enum { LEFT, RIGHT } just = strchr(state->flags, '-') ? LEFT : RIGHT;
+
+	if (!state->fw_set || ow >= (size_t) state->fw)
+		return;
+
+	pad = state->fw - ow;
+
+	if (just == RIGHT)
+		repeat(state, ' ', pad);
+	else
+		state->padding = pad;
+}
+
 static const char *readflags(struct tpf_state *state, const char *p)
 {
 	const char *q;
@@ -194,6 +216,7 @@ static void rinse(struct tpf_state * state) {
 	state->length = LENGTH_UNSET;
 	state->fw_set = 0;
 	state->prec_set = 0;
+	state->padding = 0;
 }
 
 int tvprintf(const struct tpf_context *context, const struct tpf_output *output, const char *fmt, va_list ap)
@@ -227,6 +250,8 @@ int tvprintf(const struct tpf_context *context, const struct tpf_output *output,
 
 			if (formatter->callback(&state, &hack) != 0)
 				goto fail;
+
+			repeat(&state, ' ', state.padding);
 
 			rinse(&state);
 		}
