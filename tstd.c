@@ -28,17 +28,8 @@ static void convert_cstr(struct tpf_state *state, const char *s)
 	size_t limit = state->prec_set ? (size_t) state->prec : SIZE_MAX;
 	size_t len = cstrlen(s, limit);
 
-	size_t pad = 0;
-	enum { LEFT, RIGHT } just = strchr(state->flags, '-') ? LEFT : RIGHT;
-
-	if (state->fw_set && (size_t) state->fw > len)
-		pad = (size_t) state->fw - len;
-
-	if (just == RIGHT)
-		repeat(state, ' ', pad);
+	tpf_pad(state, len);
 	tpf_write(state, len, s);
-	if (just == LEFT)
-		repeat(state, ' ', pad);
 }
 
 static size_t write_wstr(struct tpf_state *state, const wchar_t *wc, int dry_run)
@@ -64,17 +55,9 @@ static size_t write_wstr(struct tpf_state *state, const wchar_t *wc, int dry_run
 static void convert_wstr(struct tpf_state *state, const wchar_t *wc)
 {
 	size_t len = write_wstr(state, wc, 1);
-	size_t pad = 0;
-	enum { LEFT, RIGHT } just = strchr(state->flags, '-') ? LEFT : RIGHT;
 
-	if (state->fw_set && (size_t) state->fw > len)
-		pad = (size_t) state->fw - len;
-
-	if (just == RIGHT)
-		repeat(state, ' ', pad);
+	tpf_pad(state, len);
 	write_wstr(state, wc, 0);
-	if (just == LEFT)
-		repeat(state, ' ', pad);
 }
 
 static int read_int(struct tpf_state *state, va_list *ap, intmax_t *v)
@@ -124,13 +107,12 @@ static void convert_int(struct tpf_state *state, uintmax_t i, int sign, int base
 
 	char pad = ' ';
 	char pre = '\0';
-	enum { LEFT, RIGHT } just = RIGHT;
 
 	digits = digits_unsigned(i, base);
 	width = digits + strlen(prefix);
 
 	if (!state->prec_set && strchr(state->flags, '0')) pad = '0';
-	if (                    strchr(state->flags, '-')) pad = ' ', just = LEFT;
+	if (                    strchr(state->flags, '-')) pad = ' ';
 	if (sign &&             strchr(state->flags, ' ')) pre = ' ';
 	if (sign &&             strchr(state->flags, '+')) pre = '+';
 
@@ -148,13 +130,10 @@ static void convert_int(struct tpf_state *state, uintmax_t i, int sign, int base
 	if (state->fw_set && width < state->fw)
 		padding = state->fw - width;
 
-	if (pad == '0') {
+	if (pad == '0')
 		zero += padding;
-		padding = 0;
-	}
-
-	if (just == RIGHT)
-		repeat(state, pad, padding);
+	else
+		tpf_pad(state, width);
 
 	if (sign < 0)
 		tpf_write(state, 1, "-");
@@ -171,9 +150,6 @@ static void convert_int(struct tpf_state *state, uintmax_t i, int sign, int base
 
 	for ( ; digits > 0 && div; div /= base)
 		tpf_write(state, 1, alphabet + (i / div) % base);
-
-	if (just == LEFT)
-		repeat(state, pad, padding);
 }
 
 static void convert_signed  (struct tpf_state *state,  intmax_t i, int base, const char *alphabet)
