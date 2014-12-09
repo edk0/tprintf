@@ -7,13 +7,10 @@
 
 struct tpf_state;
 
-typedef size_t tpf_writer(void *, size_t, const char *);
-typedef int tpf_conv(struct tpf_state *, va_list *);
-
 struct tpf_format {
 	char spec;
 	char *flags;
-	tpf_conv *callback;
+	int (*callback)(struct tpf_state *, va_list *);
 };
 
 struct tpf_context {
@@ -46,7 +43,7 @@ struct tpf_state {
 };
 
 struct tpf_output {
-	tpf_writer *writer;
+	size_t (*writer)(void *, size_t, const char *);
 	void *opaque;
 };
 
@@ -54,7 +51,7 @@ int tvprintf (const struct tpf_context *, const struct tpf_output *, const char 
 int tprintf  (const struct tpf_context *, const struct tpf_output *, const char *, ...);
 
 void tpf_init      (struct tpf_context *);
-void tpf_register  (struct tpf_context *, char, const char *, tpf_conv *);
+void tpf_register  (struct tpf_context *, char, const char *, int (*)(struct tpf_state *, va_list *));
 void tpf_unregister(struct tpf_context *, char);
 void tpf_fini      (struct tpf_context *);
 

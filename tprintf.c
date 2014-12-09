@@ -27,7 +27,7 @@ void tpf_init(struct tpf_context *context)
 	*context = prototype;
 }
 
-void tpf_register(struct tpf_context *context, char letter, const char *flags, tpf_conv *conv)
+void tpf_register(struct tpf_context *context, char letter, const char *flags, int (*conv)(struct tpf_state *, va_list *))
 {
 	size_t len;
 	struct tpf_format *fmt;
