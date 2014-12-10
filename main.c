@@ -5,7 +5,6 @@
 #include "tstd.h"
 #include "tprintf.h"
 
-static tpf_conv conv_r;
 static int conv_r(struct tpf_state *state, va_list *ap)
 {
 	int i;
