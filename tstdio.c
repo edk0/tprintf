@@ -9,8 +9,7 @@
 #include "tstdio.h"
 
 
-static tpf_writer write_FILE;
-size_t write_FILE(void *arg, size_t len, const char *data)
+static size_t write_FILE(void *arg, size_t len, const char *data)
 {
 	FILE *f = arg;
 	return fwrite(data, 1, len, f);
@@ -21,8 +20,7 @@ struct sprintf_context {
 	size_t pos, limit;
 };
 
-static tpf_writer write_str;
-size_t write_str(void *arg, size_t len, const char *data)
+static size_t write_str(void *arg, size_t len, const char *data)
 {
 	struct sprintf_context *context = arg;
 	size_t write = len;
