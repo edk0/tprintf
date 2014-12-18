@@ -257,6 +257,7 @@ int tvprintf(const struct tpf_context *context, const struct tpf_output *output,
 		}
 	}
 
+	va_end(hack);
 	return state.pos;
 
 fail:
