@@ -40,8 +40,9 @@ void tpf_register(struct tpf_context *context, char letter, const char *flags, i
 	fmt->callback = conv;
 
 	len = strlen(flags);
-	fmt->flags = xmalloc(len + 1);
-	fmt->flags[len] = '\0';
+	if (len > 15)
+		len = 15;
+
 	memcpy(fmt->flags, flags, len);
 	qsort(fmt->flags, len, 1, cmp_char);
 
@@ -105,16 +106,19 @@ void tpf_pad(struct tpf_state *state, size_t ow)
 static const char *readflags(struct tpf_state *state, const char *p)
 {
 	const char *q;
+	size_t len;
 
 	for (q = p; *q; q++)
 		if (isalnum(*q) && *q != '0' || *q == '.' || *q == '%' || *q == '*')
 			break;
 
-	state->flags = xmalloc(q - p + 1);
-	state->flags[q - p] = '\0';
+	len = q - p;
+	if (len > 15)
+		len = 15;
+	state->flags[len] = '\0';
 	if (q != p)
 		memcpy(state->flags, p, q - p);
-	qsort(state->flags, q - p, 1, cmp_char);
+	qsort(state->flags, len, 1, cmp_char);
 
 	return q;
 }
@@ -209,10 +213,6 @@ static char checkflags(const char *allow, const char *cmp)
 }
 
 static void rinse(struct tpf_state * state) {
-	if (state->flags) {
-		free(state->flags);
-		state->flags = NULL;
-	}
 	state->length = LENGTH_UNSET;
 	state->fw_set = 0;
 	state->prec_set = 0;

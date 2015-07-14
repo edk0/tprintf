@@ -9,7 +9,7 @@ struct tpf_state;
 
 struct tpf_format {
 	char spec;
-	char *flags;
+	char flags[16];
 	int (*callback)(struct tpf_state *, va_list *);
 };
 
@@ -24,7 +24,7 @@ struct tpf_state {
 
 	const struct tpf_format *formatter;
 
-	char *flags;
+	char flags[16];
 	enum {
 		LENGTH_hh,
 		LENGTH_h,
