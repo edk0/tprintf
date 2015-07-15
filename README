@@ -1,0 +1,10 @@
+tprintf is a printf implementation (or will be, once it isn't missing
+floating-point conversion specifiers).
+
+Things are generally quite extensible; see tprintf.h for the interface.
+Implementations of the standard C conversion specifiers can be found in
+tstd.c.
+Examples of most of this - including an example of a custom conversion
+specifier - are in main.c.
+
+The %n$ notation is not supported. I don't think it ever will be.
