@@ -40,11 +40,11 @@ int main(void)
 
 	tprintf_printf("object representation:\n%!.*r\n", (int) sizeof b, (void *) b);
 
-	tprintf_printf("integers: %010.5d\n", -59);
-	printf("integers: %010.5d\n", -59);
+	tprintf_printf("integers/tprintf: %010.5d\n", -59);
+	        printf("integers/libc:    %010.5d\n", -59);
 
 	tprintf_printf("%-20s (%-5i|%5i)\n", "Justification.", 17, 17);
-	tprintf_printf("0        1         2\n");
+	tprintf_printf("         1         2\n");
 	tprintf_printf("12345678901234567890\n");
 
 	return 0;
