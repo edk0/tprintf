@@ -36,8 +36,8 @@ struct tpf_state {
 		LENGTH_t,
 		LENGTH_UNSET
 	} length;
-	int fw,   fw_set;
-	int prec, prec_set;
+	size_t fw,     prec;
+	int    fw_set, prec_set;
 
 	size_t padding;
 };
