@@ -13,14 +13,6 @@ static int cmp_char(const void *a, const void *b)
 	return *a_ - *b_;
 }
 
-static void *xmalloc(size_t s)
-{
-	void *p = malloc(s);
-	if (!p)
-		exit(-1);
-	return p;
-}
-
 void tpf_init(struct tpf_context *context)
 {
 	static struct tpf_context prototype;
