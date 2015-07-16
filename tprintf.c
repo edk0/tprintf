@@ -105,6 +105,9 @@ static const char *readflags(struct tpf_state *state, const char *p)
 	const char *q;
 	size_t len;
 
+	if (!p)
+		return p;
+
 	for (q = p; *q; q++)
 		if (isalnum(*q) && *q != '0' || *q == '.' || *q == '%' || *q == '*')
 			break;
@@ -124,6 +127,9 @@ static const char *readwidth(struct tpf_state *state, const char *p, va_list *ap
 {
 	long l;
 	char *end;
+
+	if (!p)
+		return p;
 
 	if (*p == '*') {
 		state->fw = va_arg(*ap, int);
@@ -148,6 +154,9 @@ static const char *readprec(struct tpf_state *state, const char *p, va_list *ap)
 {
 	long l;
 	char *end;
+
+	if (!p)
+		return p;
 
 	if (*p != '.')
 		return p;
@@ -180,6 +189,9 @@ static const char *readprec(struct tpf_state *state, const char *p, va_list *ap)
 
 static const char *readlen(struct tpf_state *state, const char *p)
 {
+	if (!p)
+		return p;
+
 	switch (*p) {
 	case 'h': state->length = LENGTH_h;     break;
 	case 'l': state->length = LENGTH_l;     break;
@@ -242,6 +254,9 @@ int tvprintf(const struct tpf_context *context, const struct tpf_output *output,
 			p = readwidth(&state, p, &hack);
 			p = readprec (&state, p, &hack);
 			p = readlen  (&state, p);
+
+			if (!p)
+				goto fail;
 
 			formatter = context->fmts[(unsigned char)*p];
 			if (!formatter)
