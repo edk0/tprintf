@@ -51,7 +51,7 @@ int tvprintf (const struct tpf_context *, const struct tpf_output *, const char 
 int tprintf  (const struct tpf_context *, const struct tpf_output *, const char *, ...);
 
 void tpf_init      (struct tpf_context *);
-void tpf_register  (struct tpf_context *, char, const char *, int (*)(struct tpf_state *, va_list *));
+int  tpf_register  (struct tpf_context *, char, const char *, int (*)(struct tpf_state *, va_list *));
 void tpf_unregister(struct tpf_context *, char);
 void tpf_fini      (struct tpf_context *);
 

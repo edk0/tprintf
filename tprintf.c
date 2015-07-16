@@ -27,26 +27,31 @@ void tpf_init(struct tpf_context *context)
 	*context = prototype;
 }
 
-void tpf_register(struct tpf_context *context, char letter, const char *flags, int (*conv)(struct tpf_state *, va_list *))
+int tpf_register(struct tpf_context *context, char letter, const char *flags, int (*conv)(struct tpf_state *, va_list *))
 {
 	size_t len;
 	struct tpf_format *fmt;
 
 	if (context->fmts[(unsigned char)letter])
-		return;
+		return; /* XXX is this correct? */
 
-	fmt = xmalloc(sizeof *fmt);
+	fmt = malloc(sizeof *fmt);
+	if (!fmt)
+		return -1;
+
 	fmt->spec = letter;
 	fmt->callback = conv;
 
 	len = strlen(flags);
 	if (len > 15)
-		len = 15;
+		return -1;
 
 	memcpy(fmt->flags, flags, len);
 	qsort(fmt->flags, len, 1, cmp_char);
 
 	context->fmts[(unsigned char)letter] = fmt;
+
+	return 0;
 }
 
 void tpf_unregister(struct tpf_context *context, char letter)
