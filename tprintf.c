@@ -63,9 +63,8 @@ void tpf_unregister(struct tpf_context *context, char letter)
 void tpf_fini(struct tpf_context *context)
 {
 	unsigned i;
-	for (i = 0; i <= UCHAR_MAX; i++) {
+	for (i = 0; i <= UCHAR_MAX; i++)
 		tpf_unregister(context, (char)i);
-	}
 }
 
 void tpf_write(struct tpf_state *state, size_t len, const char *data)
@@ -229,9 +228,9 @@ int tvprintf(const struct tpf_context *context, const struct tpf_output *output,
 	va_copy(hack, ap);
 
 	for (p = fmt; *p; p++) {
-		if (*p != '%')
+		if (*p != '%') {
 			tpf_write(&state, 1, p);
-		else {
+		} else {
 			const struct tpf_format *formatter;
 			p++;
 
