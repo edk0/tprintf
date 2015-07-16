@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <errno.h>
 #include <limits.h>
 #include <stdarg.h>
 #include <stddef.h>
@@ -130,7 +131,10 @@ static const char *readwidth(struct tpf_state *state, const char *p, va_list *ap
 		return p + 1;
 	}
 
+	errno = 0
 	l = strtol(p, &end, 10);
+	if (errno == ERANGE || l < 0)
+		return 0;
 
 	if (end > p) {
 		state->fw = l;
@@ -156,7 +160,10 @@ static const char *readprec(struct tpf_state *state, const char *p, va_list *ap)
 		return p + 1;
 	}
 
+	errno = 0;
 	l = strtol(p, &end, 10);
+	if (errno == ERANGE || l < 0)
+		return 0;
 
 	if (end > p)
 		state->prec = l;
