@@ -132,7 +132,11 @@ static const char *readwidth(struct tpf_state *state, const char *p, va_list *ap
 		return p;
 
 	if (*p == '*') {
-		state->fw = va_arg(*ap, int);
+		int t = va_arg(*ap, int);
+		if (t < 0)
+			return 0;
+
+		state->fw = t;
 		state->fw_set = 1;
 		return p + 1;
 	}
@@ -164,7 +168,11 @@ static const char *readprec(struct tpf_state *state, const char *p, va_list *ap)
 	p++;
 
 	if (*p == '*') {
-		state->prec = va_arg(*ap, int);
+		int t = va_arg(*ap, int);
+		if (t < 0)
+			return 0;
+
+		state->prec = t;
 		state->prec_set = 1;
 		return p + 1;
 	}
