@@ -137,7 +137,7 @@ static const char *readwidth(struct tpf_state *state, const char *p, va_list *ap
 		return p + 1;
 	}
 
-	errno = 0
+	errno = 0;
 	l = strtol(p, &end, 10);
 	if (errno == ERANGE || l < 0)
 		return 0;
