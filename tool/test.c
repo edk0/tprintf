@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "tstdio.h"
-#include "tstd.h"
-#include "tprintf.h"
+#include <tstdio.h>
+#include <tstd.h>
+#include <tprintf.h>
 
 static int conv_r(struct tpf_state *state, va_list *ap)
 {
@@ -26,8 +26,10 @@ static int conv_r(struct tpf_state *state, va_list *ap)
 
 int main(void)
 {
+	int fail = 0;
 	size_t n;
 	char b[32];
+	static char big1[32768], big2[32768];
 	tprintf__init();
 
 	tpf_register(tprintf__context, 'r', "!", conv_r);
@@ -47,5 +49,19 @@ int main(void)
 	tprintf_printf("         1         2\n");
 	tprintf_printf("12345678901234567890\n");
 
-	return 0;
+#define TEST_PRINTF(p, ...) \
+	        snprintf(big1, sizeof big2, __VA_ARGS__); \
+	tprintf_snprintf(big2, sizeof big2, __VA_ARGS__); \
+	if (strcmp(big1, big2)) { \
+		printf("\nFAIL: %s\n", p); \
+		printf("libc:"); puts(big1); \
+		printf("tpf :"); puts(big2); \
+		fail = 1; \
+	} else
+
+#include "test.h"
+
+	printf("\n");
+
+	return fail;
 }
