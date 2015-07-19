@@ -55,9 +55,9 @@ int main(void)
 	puts(big2); \
 	if (strcmp(big1, big2)) { \
 		printf("\nXXX FAIL: %s\n", p); \
-		printf("XXX input: TEST_PRINTF(\"%s\", %s);\n", p, #__VA_ARGS__); \
-		printf("XXX libc    printed:"); puts(big1); \
-		printf("XXX tprintf printed:"); puts(big2); \
+		printf("XXX input:  TEST_PRINTF(\"%s\", %s);\n", p, #__VA_ARGS__); \
+		printf("XXX libc    printed: "); puts(big1); \
+		printf("XXX tprintf printed: "); puts(big2); \
 		fail++; \
 	} else { \
 		ok++; \
