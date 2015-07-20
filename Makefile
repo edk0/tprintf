@@ -9,13 +9,16 @@ tprintf.so: ${OBJS}
 tprintf.a: ${OBJS}
 	${AR} r "$@" ${OBJS}
 
-test: tprintf.a
-	python3 tool/test.py > build/test.h
-	${CC} ${CFLAGS} -Wno-format -I. -Ibuild -obuild/test tool/test.c tprintf.a
-	build/test | sed -n '/XXX/{p;b};$$p'
+# We're depending on the .c because the name of the actual library may vary.
+tool/_test_lib.c: tprintf.so tool/test_lib.py
+	python3 tool/test_lib.py
+
+test: tool/_test_lib.c
+	python3 tool/test.py | sed -n '/XXX/{p;b};$$p'
 
 clean:
 	rm -f *.o *.so *.a
+	rm -f tool/_*
 	rm -f build/*
 
 .PHONY: test clean
