@@ -26,7 +26,7 @@ int tpf_register(struct tpf_context *context, char letter, const char *flags, in
 	struct tpf_format *fmt;
 
 	if (context->fmts[(unsigned char)letter])
-		return; /* XXX is this correct? */
+		return -1; /* XXX is this correct? */
 
 	fmt = malloc(sizeof *fmt);
 	if (!fmt)
