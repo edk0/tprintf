@@ -11,6 +11,7 @@ tprintf.a: ${OBJS}
 
 # We're depending on the .c because the name of the actual library may vary.
 tool/_test_lib.c: tprintf.so tool/test_lib.py
+	rm -f tool/_test_lib.c
 	python3 tool/test_lib.py
 
 test: tool/_test_lib.c
