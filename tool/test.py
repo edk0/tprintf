@@ -16,11 +16,12 @@ def gen_int_range(r, signed=True):
         ('ll', 64, 'long long')
     )
     m, b, s = r.choice(ranges)
+    n = r.randint(0, 2 ** b - 1)
     if signed:
-        b -= 1
+        n -= 2 ** (b - 1)
     else:
         s = 'unsigned ' + s
-    return m, ffi.cast(s, r.randint(0, 2 ** b - 1))
+    return m, ffi.cast(s, n)
 
 def gen_int_meta(r):
     o = ''
