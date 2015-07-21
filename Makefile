@@ -14,7 +14,9 @@ tool/_test_lib.c: tprintf.so tool/test_lib.py
 	rm -f tool/_test_lib.c
 	python3 tool/test_lib.py
 
-test: tool/_test_lib.c
+test_lib: tool/_test_lib.c
+
+test: test_lib
 	python3 tool/test.py | sed -n '/XXX/{p;b};$$p'
 
 clean:
@@ -22,4 +24,4 @@ clean:
 	rm -f tool/_*
 	rm -f build/*
 
-.PHONY: test clean
+.PHONY: test test_lib clean
