@@ -1,3 +1,4 @@
+import itertools
 import math
 import random
 import string
@@ -77,11 +78,12 @@ def gen_call(r):
             args.extend(a)
     return [ffi.new('char[]', fmt.encode())] + args
 
-def test_one(i, r, buf1, buf2):
+def test_one(i, r, buf1, buf2, quiet):
     a = gen_call(r)
     tpf.snprintf(buf1, ffi.sizeof(buf1), *a)
     tpf.tprintf_snprintf(buf2, ffi.sizeof(buf2), *a)
-    tpf.puts(buf2)
+    if not quiet:
+        tpf.puts(buf2)
     if tpf.strcmp(buf1, buf2):
         print("XXX FAIL: test {}".format(i))
         print("XXX input: {!r}".format(a))
@@ -91,7 +93,15 @@ def test_one(i, r, buf1, buf2):
     return True
 
 def main(n='10000'):
-    n = int(n)
+    if n == '-t':
+        n = None
+        cont = True
+        seq = itertools.count()
+    else:
+        n = int(n)
+        cont = False
+        seq = range(n)
+
     tpf.tprintf__init()
     r = random.Random()
     buf1 = ffi.new("char[]", 5000)
@@ -99,13 +109,16 @@ def main(n='10000'):
     ok = 0
     fail = 0
     try:
-        for i in range(n):
-            if test_one(i, r, buf1, buf2):
+        for i in seq:
+            if test_one(i, r, buf1, buf2, cont):
                 ok += 1
             else:
                 fail += 1
+            if cont:
+                print('\r\033[0K{:7} tests, {:7} ok, {} failed'.format(ok + fail, ok, fail), end='')
     except KeyboardInterrupt:
-        pass
+        if cont:
+            print('')
     tpf.fflush(tpf.stdout)
     print("{} tests, {} passed".format(ok + fail, ok))
 
