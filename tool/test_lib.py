@@ -1,3 +1,7 @@
+"""
+Generate the CFFI module for test.py.
+"""
+
 import os
 import os.path
 from cffi import FFI

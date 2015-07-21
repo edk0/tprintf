@@ -1,3 +1,8 @@
+"""
+Dynamically link with tprintf and test it with randomly generated (but valid)
+calls.
+"""
+
 import itertools
 import math
 import random
