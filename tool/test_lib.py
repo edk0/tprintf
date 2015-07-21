@@ -4,11 +4,15 @@ Generate the CFFI module for test.py.
 
 import os
 import os.path
+import sys
+
 from cffi import FFI
+from cffi.ffiplatform import VerificationError
 
 ffi = FFI()
 
 def setup():
+    print("generating Python library")
     os.chdir(os.path.dirname(__file__))
     ffi.set_source("_test_lib",
         """
@@ -32,7 +36,12 @@ def setup():
 
         extern FILE *stdout;
         """)
-    ffi.compile()
+    try:
+        so = ffi.compile()
+    except VerificationError:
+        print("compilation failed")
+        sys.exit(1)
+    print("... ok: {}".format(so))
 
 if __name__ == '__main__':
     setup()
