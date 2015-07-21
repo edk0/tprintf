@@ -26,10 +26,8 @@ static int conv_r(struct tpf_state *state, va_list *ap)
 
 int main(void)
 {
-	unsigned long ok = 0, fail = 0;
 	size_t n;
 	char b[32];
-	static char big1[32768], big2[32768];
 	tprintf__init();
 
 	tpf_register(tprintf__context, 'r', "!", conv_r);
@@ -49,23 +47,5 @@ int main(void)
 	tprintf_printf("         1         2\n");
 	tprintf_printf("12345678901234567890\n");
 
-#define TEST_PRINTF(p, ...) \
-	        snprintf(big1, sizeof big2, __VA_ARGS__); \
-	tprintf_snprintf(big2, sizeof big2, __VA_ARGS__); \
-	puts(big2); \
-	if (strcmp(big1, big2)) { \
-		printf("\nXXX FAIL: %s\n", p); \
-		printf("XXX input:  TEST_PRINTF(\"%s\", %s);\n", p, #__VA_ARGS__); \
-		printf("XXX libc    printed: "); puts(big1); \
-		printf("XXX tprintf printed: "); puts(big2); \
-		fail++; \
-	} else { \
-		ok++; \
-	}
-
-#include "test.h"
-
-	tprintf_printf("\n%lu tests, %lu passed\n", ok + fail, ok);
-
-	return !!fail;
+	return 0;
 }
