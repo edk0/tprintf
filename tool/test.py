@@ -8,7 +8,11 @@ import math
 import random
 import string
 
-from _test_lib import lib as tpf, ffi
+try:
+    from _test_lib import lib as tpf, ffi
+except:
+    tpf = None
+    print("tprintf python bindings missing, please `make test_lib`.")
 
 def escape(s):
     return s.replace('\\', '\\\\').replace('\"', '\\"')
@@ -120,7 +124,8 @@ def main(n='10000'):
             else:
                 fail += 1
             if cont:
-                print('\r\033[0K{:7} tests, {:7} ok, {} failed'.format(ok + fail, ok, fail), end='')
+                print('\r\033[0K{:7} tests, {:7} ok, {} failed'
+                      .format(ok + fail, ok, fail), end='')
     except KeyboardInterrupt:
         if cont:
             print('')
@@ -128,6 +133,6 @@ def main(n='10000'):
     print("{} tests, {} passed".format(ok + fail, ok))
 
 
-if __name__ == '__main__':
+if tpf is not None and __name__ == '__main__':
     import sys
     main(*sys.argv[1:])
