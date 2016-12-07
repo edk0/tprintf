@@ -220,7 +220,7 @@ static const char *readlen(struct tpf_state *state, const char *p)
 	case 'l': state->length = LENGTH_ll; return p + 1;
 	}
 
-	return 0;
+	return p;
 }
 
 static char checkflags(const char *allow, const char *cmp)
