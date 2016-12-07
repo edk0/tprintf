@@ -162,8 +162,10 @@ static const char *readwidth(struct tpf_state *state, const char *p, va_list *ap
 
 	if (*p == '*') {
 		int t = va_arg(*ap, int);
-		if (t < 0)
+		if (t < 0) {
+			tpf_error(state, "%d: field width cannot be negative", t);
 			return 0;
+		}
 
 		state->fw = t;
 		state->fw_set = 1;
@@ -172,8 +174,15 @@ static const char *readwidth(struct tpf_state *state, const char *p, va_list *ap
 
 	errno = 0;
 	l = strtol(p, &end, 10);
-	if (errno == ERANGE || l < 0)
+	if (errno == ERANGE) {
+		tpf_error(state, "%.*s: field width is too large", (int)(end-p), p);
 		return 0;
+	}
+	if (l < 0)
+	{
+		tpf_error(state, "%ld: field width cannot be negative", l);
+		return 0;
+	}
 
 	if (end > p) {
 		state->fw = l;
@@ -198,8 +207,10 @@ static const char *readprec(struct tpf_state *state, const char *p, va_list *ap)
 
 	if (*p == '*') {
 		int t = va_arg(*ap, int);
-		if (t < 0)
+		if (t < 0) {
+			tpf_error(state, "%d: precision cannot be negative", t);
 			return 0;
+		}
 
 		state->prec = t;
 		state->prec_set = 1;
@@ -208,8 +219,14 @@ static const char *readprec(struct tpf_state *state, const char *p, va_list *ap)
 
 	errno = 0;
 	l = strtol(p, &end, 10);
-	if (errno == ERANGE || l < 0)
+	if (errno == ERANGE) {
+		tpf_error(state, "%.*s: precision is too large", (int)(end-p), p);
 		return 0;
+	}
+	if (l < 0) {
+		tpf_error(state, "%ld: precision cannot be negative", l);
+		return 0;
+	}
 
 	if (end > p)
 		state->prec = l;
@@ -285,6 +302,7 @@ int tvprintf(const struct tpf_context *context, const struct tpf_output *output,
 			tpf_write(&state, 1, p);
 		} else {
 			const struct tpf_format *formatter;
+			char c;
 			p++;
 
 			p = readflags(&state, p);
@@ -296,10 +314,14 @@ int tvprintf(const struct tpf_context *context, const struct tpf_output *output,
 				goto fail;
 
 			formatter = context->fmts[(unsigned char)*p];
-			if (!formatter)
+			if (!formatter) {
+				tpf_error(&state, "'%c': no formatter known for conversion", *p);
 				goto fail;
-			if (checkflags(formatter->flags, state.flags))
+			}
+			if (c = checkflags(formatter->flags, state.flags)) {
+				tpf_error(&state, "'%c': invalid flag for conversion '%c'", c, *p);
 				goto fail;
+			}
 
 			state.formatter = formatter;
 

@@ -188,6 +188,7 @@ static int conv_c(struct tpf_state *state, va_list *ap)
 		convert_wstr(state, wc);
 		return 0;
 	default:
+		tpf_error(state, "invalid length modifier");
 		return -1;
 	}
 }
@@ -254,6 +255,7 @@ static int conv_s(struct tpf_state *state, va_list *ap)
 		convert_wstr(state, wc);
 		return 0;
 	default:
+		tpf_error(state, "invalid length modifier");
 		return -1;
 	}
 }
