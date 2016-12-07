@@ -86,25 +86,41 @@ void tpf_write(struct tpf_state *state, size_t len, const char *data)
 
 void tpf_error(struct tpf_state *state, const char *fmt, ...)
 {
+	const char *fp = state->format;
+	const char *ep = state->fpos;
+	struct tpf_output *out = state->context->error;
 	struct tpf_context ctx;
 	va_list ap;
 
-	if (!state->context->error)
+	if (!out)
 		abort();
 
 	ctx = *tprintf__context;
 	ctx.error = 0;
 
-	if (state->formatter)
-		tprintf(&ctx, state->context->error, "ERROR: during %%%c: ", state->formatter->spec);
-	else
-		tpout(state->context->error, 7, "ERROR: ");
+	tpout(out, 7, "ERROR:\n");
+
+	tpout(out, 3, "  \"");
+	while (*fp) {
+		switch (*fp) {
+		case '\"': tpout(out, 2, "\\\""); if (fp < ep) ep++; break;
+		case '\n': tpout(out, 2, "\\n");  if (fp < ep) ep++; break;
+		case '\t': tpout(out, 2, "\\t");  if (fp < ep) ep++; break;
+		default:   tpout(out, 1, fp);
+		}
+		fp++;
+	}
+	tpout(out, 2, "\"\n");
+
+	tprintf(&ctx, out, "   %*s^\n", ep - state->format, "");
+
+	tpout(out, 2, "  ");
 
 	va_start(ap, fmt);
-	tvprintf(&ctx, state->context->error, fmt, ap);
+	tvprintf(&ctx, out, fmt, ap);
 	va_end(ap);
 
-	tpout(state->context->error, 1, "\n");
+	tpout(out, 1, "\n");
 }
 
 static void repeat(struct tpf_state *state, char c, size_t n)
@@ -294,6 +310,7 @@ int tvprintf(const struct tpf_context *context, const struct tpf_output *output,
 	struct tpf_state state = {.context = context};
 	va_list hack;
 
+	state.format = fmt;
 	state.output = output;
 	va_copy(hack, ap);
 
@@ -303,6 +320,9 @@ int tvprintf(const struct tpf_context *context, const struct tpf_output *output,
 		} else {
 			const struct tpf_format *formatter;
 			char c;
+
+			state.fpos = p;
+
 			p++;
 
 			p = readflags(&state, p);

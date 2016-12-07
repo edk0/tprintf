@@ -25,6 +25,7 @@ struct tpf_state {
 	int error;
 
 	const struct tpf_format *formatter;
+	const char *format, *fpos;
 
 	char flags[16];
 	enum {

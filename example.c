@@ -61,5 +61,8 @@ int main(void)
 	tprintf_snprintf(0, 0, "%hs", "");
 	tprintf_snprintf(0, 0, "%zc", 0);
 
+	puts("error message");
+	tprintf_snprintf(0, 0, "%c\t%c\n%c\n%zc", 1, 1, 1, 1);
+
 	return 0;
 }
