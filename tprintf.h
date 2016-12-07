@@ -18,6 +18,7 @@ struct tpf_context {
 };
 
 struct tpf_state {
+	const struct tpf_context *context;
 	const struct tpf_output *output;
 	size_t pos;
 	int error;

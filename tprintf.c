@@ -245,7 +245,7 @@ static void rinse(struct tpf_state * state) {
 int tvprintf(const struct tpf_context *context, const struct tpf_output *output, const char *fmt, va_list ap)
 {
 	const char *p;
-	struct tpf_state state = {0};
+	struct tpf_state state = {.context = context};
 	va_list hack;
 
 	state.output = output;
