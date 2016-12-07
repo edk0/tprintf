@@ -47,5 +47,19 @@ int main(void)
 	tprintf_printf("         1         2\n");
 	tprintf_printf("12345678901234567890\n");
 
+	puts("invalid conversion");
+	tprintf_snprintf(0, 0, "%y");
+
+	puts("invalid flag");
+	tprintf_snprintf(0, 0, "%^d", 1);
+
+	puts("invalid field widths");
+	tprintf_snprintf(0, 0, "%*d", -1, 1);
+	tprintf_snprintf(0, 0, "%9999999999999999999999999999999999999999999999999999999999999d", 1);
+
+	puts("invalid lengths");
+	tprintf_snprintf(0, 0, "%hs", "");
+	tprintf_snprintf(0, 0, "%zc", 0);
+
 	return 0;
 }
