@@ -1,5 +1,6 @@
 #include <limits.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
@@ -293,9 +294,17 @@ static int conv_X(struct tpf_state *state, va_list *ap)
 	return 0;
 }
 
+static size_t write_error(void *arg, size_t len, const char *data)
+{
+	return fwrite(data, 1, len, stderr);
+}
+
+static struct tpf_output error_output = { write_error, 0 };
+
 void tprintf__init(void)
 {
 	tpf_init(tprintf__context);
+	tprintf__context->error = &error_output;
 
 	tpf_register(tprintf__context, '%', "",      conv_pct);
 	tpf_register(tprintf__context, 'c', " +-",   conv_c);
