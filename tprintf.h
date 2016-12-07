@@ -15,6 +15,7 @@ struct tpf_format {
 
 struct tpf_context {
 	struct tpf_format *fmts[UCHAR_MAX + 1];
+	struct tpf_output *error;
 };
 
 struct tpf_state {
@@ -56,7 +57,8 @@ int  tpf_register  (struct tpf_context *, char, const char *, int (*)(struct tpf
 void tpf_unregister(struct tpf_context *, char);
 void tpf_fini      (struct tpf_context *);
 
-void tpf_write(struct tpf_state *state, size_t, const char *);
-void tpf_pad  (struct tpf_state *state, size_t);
+void tpf_error(struct tpf_state *, const char *, ...);
+void tpf_write(struct tpf_state *, size_t, const char *);
+void tpf_pad  (struct tpf_state *, size_t);
 
 #endif

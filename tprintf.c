@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "tprintf.h"
+#include "tstd.h"
 
 static int cmp_char(const void *a, const void *b)
 {
@@ -65,6 +66,11 @@ void tpf_fini(struct tpf_context *context)
 		tpf_unregister(context, (char)i);
 }
 
+static size_t tpout(const struct tpf_output *out, size_t len, const char *data)
+{
+	return out->writer(out->opaque, len, data);
+}
+
 void tpf_write(struct tpf_state *state, size_t len, const char *data)
 {
 	size_t r;
@@ -72,10 +78,33 @@ void tpf_write(struct tpf_state *state, size_t len, const char *data)
 	if (state->error)
 		return;
 
-	r = state->output->writer(state->output->opaque, len, data);
+	r = tpout(state->output, len, data);
 	if (r < len)
 		state->error = 1;
 	state->pos += r;
+}
+
+void tpf_error(struct tpf_state *state, const char *fmt, ...)
+{
+	struct tpf_context ctx;
+	va_list ap;
+
+	if (!state->context->error)
+		abort();
+
+	ctx = *tprintf__context;
+	ctx.error = 0;
+
+	if (state->formatter)
+		tprintf(&ctx, state->context->error, "ERROR: during %%%c: ", state->formatter->spec);
+	else
+		tpout(state->context->error, 7, "ERROR: ");
+
+	va_start(ap, fmt);
+	tvprintf(&ctx, state->context->error, fmt, ap);
+	va_end(ap);
+
+	tpout(state->context->error, 1, "\n");
 }
 
 static void repeat(struct tpf_state *state, char c, size_t n)
@@ -276,6 +305,8 @@ int tvprintf(const struct tpf_context *context, const struct tpf_output *output,
 
 			if (formatter->callback(&state, &hack) != 0)
 				goto fail;
+
+			state.formatter = 0;
 
 			repeat(&state, ' ', state.padding);
 
