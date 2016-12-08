@@ -106,7 +106,14 @@ void tpf_error(struct tpf_state *state, const char *fmt, ...)
 		case '\"': tpout(out, 2, "\\\""); if (fp < state->fpos) ep++; break;
 		case '\n': tpout(out, 2, "\\n");  if (fp < state->fpos) ep++; break;
 		case '\t': tpout(out, 2, "\\t");  if (fp < state->fpos) ep++; break;
-		default:   tpout(out, 1, fp);
+		default:
+			if (isprint((unsigned char)*fp)) {
+				tpout(out, 1, fp);
+			} else {
+				/* 3 characters of octal is guaranteed not to eat anything following */
+				size_t n = tprintf(&ctx, out, "\\%03hho", *fp);
+				if (fp < state->fpos) ep += n - 1;
+			}
 		}
 		fp++;
 	}
