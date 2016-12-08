@@ -103,9 +103,9 @@ void tpf_error(struct tpf_state *state, const char *fmt, ...)
 	tpout(out, 3, "  \"");
 	while (*fp) {
 		switch (*fp) {
-		case '\"': tpout(out, 2, "\\\""); if (fp < ep) ep++; break;
-		case '\n': tpout(out, 2, "\\n");  if (fp < ep) ep++; break;
-		case '\t': tpout(out, 2, "\\t");  if (fp < ep) ep++; break;
+		case '\"': tpout(out, 2, "\\\""); if (fp < state->fpos) ep++; break;
+		case '\n': tpout(out, 2, "\\n");  if (fp < state->fpos) ep++; break;
+		case '\t': tpout(out, 2, "\\t");  if (fp < state->fpos) ep++; break;
 		default:   tpout(out, 1, fp);
 		}
 		fp++;
