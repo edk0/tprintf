@@ -87,7 +87,7 @@ void tpf_write(struct tpf_state *state, size_t len, const char *data)
 void tpf_error(struct tpf_state *state, const char *fmt, ...)
 {
 	const char *fp = state->format;
-	const char *ep = state->fpos;
+	ptrdiff_t ep = state->fpos - state->format;
 	struct tpf_output *out = state->context->error;
 	struct tpf_context ctx;
 	va_list ap;
@@ -119,7 +119,7 @@ void tpf_error(struct tpf_state *state, const char *fmt, ...)
 	}
 	tpout(out, 2, "\"\n");
 
-	tprintf(&ctx, out, "   %*s^\n", ep - state->format, "");
+	tprintf(&ctx, out, "   %*s^\n", ep, "");
 
 	tpout(out, 2, "  ");
 
