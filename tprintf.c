@@ -37,7 +37,7 @@ int tpf_register(struct tpf_context *context, char letter, const char *flags, in
 	fmt->callback = conv;
 
 	len = strlen(flags);
-	if (len > 15)
+	if (len >= sizeof fmt->flags)
 		return -1;
 
 	memcpy(fmt->flags, flags, len);
